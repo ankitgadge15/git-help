@@ -19,7 +19,6 @@ const scenarios = {
             { label: "Everything is broken, I just want to start over", next: "nuclearOption" }
         ]
     },
-
     // --- WRONG BRANCH PATH ---
     wrongBranch: {
         text: "Have you pushed the incorrect commit to a remote server?",
@@ -49,7 +48,6 @@ const scenarios = {
         ],
         isDanger: true
     },
-
     // --- UNDO/MODIFY MENU ---
     undoMenu: {
         text: "What specifically do you want to change?",
@@ -80,7 +78,6 @@ const scenarios = {
             "git commit --amend --no-edit"
         ]
     },
-
     // --- MERGE & REBASE ---
     mergeNightmare: {
         text: "What's the status of the merge/rebase?",
@@ -107,7 +104,6 @@ const scenarios = {
         text: "After resolving conflicts and staging files, continue the rebase:",
         commands: ["git add <resolved-files>", "git rebase --continue"]
     },
-
     // --- RECOVERY ---
     recovery: {
         text: "What did you lose?",
@@ -144,7 +140,6 @@ const scenarios = {
             "git checkout -b <local-branch> origin/<remote-branch>"
         ]
     },
-
     // --- DETACHED HEAD ---
     detachedHead: {
         text: "Don't panic. You're just looking at a specific commit. To save work:",
@@ -154,7 +149,6 @@ const scenarios = {
             "git merge temp-branch-to-save-work"
         ]
     },
-
     // --- SECRETS & NUCLEAR ---
     secrets: {
         text: "STOP. Do not push. If already pushed, rotate keys immediately. Then run:",
@@ -171,7 +165,6 @@ const scenarios = {
         ],
         isDanger: true
     },
-
     // --- REVERT COMMIT ---
     revertCommit: {
         text: "Revert creates a new commit that undoes the changes of the specified commit (safe for shared history):",
@@ -180,7 +173,6 @@ const scenarios = {
             "git push origin <branch-name>"
         ]
     },
-
     // --- PULL CONFLICTS ---
     pullConflict: {
         text: "Pull and handle conflicts, or rebase to integrate cleanly:",
@@ -197,7 +189,6 @@ const scenarios = {
         text: "Pull with rebase strategy:",
         commands: ["git pull --rebase origin <branch-name>"]
     },
-
     // --- SQUASH COMMITS ---
     squashCommits: {
         text: "Use interactive rebase to squash the last N commits:",
@@ -206,7 +197,6 @@ const scenarios = {
             "# In editor, change 'pick' to 'squash' or 's' for commits to merge"
         ]
     },
-
     // --- STASH MENU ---
     stashMenu: {
         text: "Stash options:",
@@ -238,7 +228,6 @@ const scenarios = {
         text: "Drop a specific stash (use index from list):",
         commands: ["git stash drop stash@{0}"]
     },
-
     // --- CLEAN UNTRACKED ---
     cleanUntracked: {
         text: "Clean untracked files and directories:",
@@ -262,7 +251,6 @@ const scenarios = {
         commands: ["git clean -f -x"],
         isDanger: true
     },
-
     // --- CHANGE REMOTE ---
     changeRemote: {
         text: "Change the URL of the origin remote:",
@@ -270,7 +258,6 @@ const scenarios = {
             "git remote set-url origin <new-url>"
         ]
     },
-
     // --- SEE DIFF ---
     seeDiff: {
         text: "Diff options:",
@@ -292,7 +279,6 @@ const scenarios = {
         text: "See unstaged changes:",
         commands: ["git diff"]
     },
-
     // --- SUBMODULE ISSUES ---
     submoduleIssues: {
         text: "Submodule troubleshooting:",
