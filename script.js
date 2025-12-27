@@ -1,4 +1,3 @@
-```javascript
 const scenarios = {
     start: {
         text: "What did you break this time?",
@@ -8,7 +7,7 @@ const scenarios = {
             { label: "I'm stuck in a MERGE/REBASE nightmare", next: "mergeNightmare" },
             { label: "I accidentally DELETED something", next: "recovery" },
             { label: "I committed SECRETS (API keys/passwords)", next: "secrets" },
-            { label: "Everything is broken, I just want to start over", next: "nuclearOption" },
+            { label: "I'm in 'Detached HEAD' state and I'm scared", next: "detachedHead" },
             { label: "I want to REVERT a pushed commit", next: "revertCommit" },
             { label: "I forgot to PULL and now have conflicts on PUSH", next: "pullConflict" },
             { label: "I need to SQUASH multiple commits", next: "squashCommits" },
@@ -16,9 +15,12 @@ const scenarios = {
             { label: "I want to CLEAN untracked files", next: "cleanUntracked" },
             { label: "I need to CHANGE the remote URL", next: "changeRemote" },
             { label: "I want to see DIFF between commits/branches", next: "seeDiff" },
-            { label: "I'm having SUBMODULE problems", next: "submoduleIssues" }
+            { label: "I'm having SUBMODULE problems", next: "submoduleIssues" },
+            { label: "Everything is broken, I just want to start over", next: "nuclearOption" }
         ]
     },
+
+    // --- WRONG BRANCH PATH ---
     wrongBranch: {
         text: "Have you pushed the incorrect commit to a remote server?",
         options: [
@@ -47,6 +49,8 @@ const scenarios = {
         ],
         isDanger: true
     },
+
+    // --- UNDO/MODIFY MENU ---
     undoMenu: {
         text: "What specifically do you want to change?",
         options: [
@@ -76,12 +80,14 @@ const scenarios = {
             "git commit --amend --no-edit"
         ]
     },
+
+    // --- MERGE & REBASE ---
     mergeNightmare: {
         text: "What's the status of the merge/rebase?",
         options: [
             { label: "I want to ABORT this mess and go back", next: "abortMerge" },
             { label: "I have 100 conflicts and want to use 'THEIRS'", next: "solveTheirs" },
-            { label: "I have conflicts and want to use 'OURS'", next: "solveOurs" },
+            { label: "I want to use 'MINE' for everything", next: "solveOurs" },
             { label: "Continue rebase after resolving some conflicts", next: "continueRebase" }
         ]
     },
@@ -94,18 +100,21 @@ const scenarios = {
         commands: ["git checkout --theirs .", "git add .", "git commit"]
     },
     solveOurs: {
-        text: "Force Git to accept the current branch's version for all conflicts:",
+        text: "Force Git to keep your version for all conflicts:",
         commands: ["git checkout --ours .", "git add .", "git commit"]
     },
     continueRebase: {
         text: "After resolving conflicts and staging files, continue the rebase:",
         commands: ["git add <resolved-files>", "git rebase --continue"]
     },
+
+    // --- RECOVERY ---
     recovery: {
         text: "What did you lose?",
         options: [
             { label: "I deleted a branch locally", next: "recoverBranch" },
             { label: "I 'hard reset' and lost work", next: "reflog" },
+            { label: "I accidentally 'git add'ed the wrong files", next: "unstage" },
             { label: "I lost a remote branch", next: "recoverRemoteBranch" }
         ]
     },
@@ -124,6 +133,10 @@ const scenarios = {
         ],
         isDanger: true
     },
+    unstage: {
+        text: "To unstage files without losing changes:",
+        commands: ["git reset HEAD <file-name>"]
+    },
     recoverRemoteBranch: {
         text: "List remote branches and recreate locally:",
         commands: [
@@ -131,6 +144,18 @@ const scenarios = {
             "git checkout -b <local-branch> origin/<remote-branch>"
         ]
     },
+
+    // --- DETACHED HEAD ---
+    detachedHead: {
+        text: "Don't panic. You're just looking at a specific commit. To save work:",
+        commands: [
+            "git checkout -b temp-branch-to-save-work",
+            "git checkout main",
+            "git merge temp-branch-to-save-work"
+        ]
+    },
+
+    // --- SECRETS & NUCLEAR ---
     secrets: {
         text: "STOP. Do not push. If already pushed, rotate keys immediately. Then run:",
         commands: [
@@ -146,6 +171,8 @@ const scenarios = {
         ],
         isDanger: true
     },
+
+    // --- REVERT COMMIT ---
     revertCommit: {
         text: "Revert creates a new commit that undoes the changes of the specified commit (safe for shared history):",
         commands: [
@@ -153,6 +180,8 @@ const scenarios = {
             "git push origin <branch-name>"
         ]
     },
+
+    // --- PULL CONFLICTS ---
     pullConflict: {
         text: "Pull and handle conflicts, or rebase to integrate cleanly:",
         options: [
@@ -168,6 +197,8 @@ const scenarios = {
         text: "Pull with rebase strategy:",
         commands: ["git pull --rebase origin <branch-name>"]
     },
+
+    // --- SQUASH COMMITS ---
     squashCommits: {
         text: "Use interactive rebase to squash the last N commits:",
         commands: [
@@ -175,6 +206,8 @@ const scenarios = {
             "# In editor, change 'pick' to 'squash' or 's' for commits to merge"
         ]
     },
+
+    // --- STASH MENU ---
     stashMenu: {
         text: "Stash options:",
         options: [
@@ -205,6 +238,8 @@ const scenarios = {
         text: "Drop a specific stash (use index from list):",
         commands: ["git stash drop stash@{0}"]
     },
+
+    // --- CLEAN UNTRACKED ---
     cleanUntracked: {
         text: "Clean untracked files and directories:",
         options: [
@@ -227,12 +262,16 @@ const scenarios = {
         commands: ["git clean -f -x"],
         isDanger: true
     },
+
+    // --- CHANGE REMOTE ---
     changeRemote: {
         text: "Change the URL of the origin remote:",
         commands: [
             "git remote set-url origin <new-url>"
         ]
     },
+
+    // --- SEE DIFF ---
     seeDiff: {
         text: "Diff options:",
         options: [
@@ -253,6 +292,8 @@ const scenarios = {
         text: "See unstaged changes:",
         commands: ["git diff"]
     },
+
+    // --- SUBMODULE ISSUES ---
     submoduleIssues: {
         text: "Submodule troubleshooting:",
         options: [
@@ -301,7 +342,7 @@ function renderNode(nodeKey) {
         node.commands.forEach((cmd, index) => {
             html += `
                 <div class="command-wrapper">
-                    <code class="command-line" id="cmd-${index}">${cmd}</code>
+                    <code class="command-line" id="cmd-\( {index}"> \){cmd}</code>
                     <button class="copy-btn" onclick="copyToClipboard('cmd-${index}')">Copy</button>
                 </div>`;
         });
@@ -341,5 +382,5 @@ async function copyToClipboard(id) {
     }
 }
 
+// Initial Render
 renderNode('start');
-```
