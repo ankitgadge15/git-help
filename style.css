@@ -1,51 +1,75 @@
+/* Color Palette & Variables */
 :root {
     --bg-color: #1e1e1e;
+    --terminal-black: #0f0f0f;
     --text-color: #d4d4d4;
-    --accent-color: #4fc1ff;
+    --accent-color: #4fc1ff;      /* Terminal Blue */
     --command-bg: #2d2d2d;
-    --danger-color: #f44747;
-    --success-color: #6a9955;
+    --danger-color: #f44747;      /* Git Error Red */
+    --success-color: #6a9955;     /* Git Success Green */
+    --header-bg: #333333;
 }
 
+/* Base Layout */
 body {
-    background-color: #0f0f0f;
-    font-family: 'Courier New', Courier, monospace;
+    background-color: var(--terminal-black);
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
+    padding: 20px;
 }
 
+/* Terminal Window Container */
 .terminal-container {
-    width: 90%;
-    max-width: 700px;
+    width: 100%;
+    max-width: 800px;
     background: var(--bg-color);
-    border-radius: 8px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    border-radius: 10px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.6);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
+/* Window Header Bar */
 .terminal-header {
-    background: #333;
-    padding: 10px;
+    background: var(--header-bg);
+    padding: 12px 15px;
     display: flex;
     align-items: center;
+    border-bottom: 1px solid #444;
 }
 
 .dot { height: 12px; width: 12px; border-radius: 50%; margin-right: 8px; }
 .red { background: #ff5f56; }
 .yellow { background: #ffbd2e; }
 .green { background: #27c93f; }
-.title { color: #999; font-size: 13px; margin-left: 10px; }
 
-.terminal-body {
-    padding: 25px;
-    min-height: 300px;
+.title { 
+    color: #999; 
+    font-size: 13px; 
+    margin-left: 10px;
+    letter-spacing: 0.5px;
 }
 
-.question { color: var(--accent-color); font-size: 1.2rem; margin-bottom: 20px; }
+/* Main Content Area */
+.terminal-body {
+    padding: 30px;
+    min-height: 350px;
+    flex-grow: 1;
+}
 
+.question { 
+    color: var(--accent-color); 
+    font-size: 1.3rem; 
+    margin-bottom: 25px;
+    line-height: 1.4;
+}
+
+/* Choice Buttons */
 .option-btn {
     display: block;
     width: 100%;
@@ -53,31 +77,97 @@ body {
     background: transparent;
     border: 1px solid #444;
     color: var(--text-color);
-    padding: 12px;
-    margin-bottom: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+    font-family: inherit;
+    font-size: 1rem;
     cursor: pointer;
-    transition: 0.2s;
+    transition: all 0.2s ease;
+    border-radius: 4px;
 }
 
-.option-btn:hover { background: #333; border-color: var(--accent-color); }
+.option-btn:hover { 
+    background: #2a2d2e; 
+    border-color: var(--accent-color);
+    transform: translateX(5px);
+}
 
+/* Results & Commands Section */
 .command-block {
     background: var(--command-bg);
-    padding: 15px;
+    padding: 0 15px;
     border-left: 4px solid var(--success-color);
-    margin-top: 15px;
-    position: relative;
+    margin: 20px 0;
+    border-radius: 0 4px 4px 0;
 }
 
-.command-line { color: #b5cea8; display: block; margin: 5px 0; }
-.danger-zone { border-color: var(--danger-color); }
+.command-block.danger-zone {
+    border-left-color: var(--danger-color);
+    background: #322525;
+}
 
+/* Individual Command Lines */
+.command-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.command-wrapper:last-child {
+    border-bottom: none;
+}
+
+.command-line { 
+    color: #b5cea8; 
+    font-size: 0.95rem;
+    word-break: break-all;
+}
+
+/* Copy Button Styling */
+.copy-btn {
+    background: #444;
+    border: none;
+    color: #bbb;
+    font-size: 11px;
+    padding: 5px 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    border-radius: 3px;
+    margin-left: 15px;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+
+.copy-btn:hover {
+    background: var(--accent-color);
+    color: #000;
+}
+
+/* Navigation & Utility */
 button#back-btn {
-    margin: 15px;
+    margin: 0 30px 20px 30px;
     background: none;
     border: none;
-    color: #666;
+    color: #777;
     cursor: pointer;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: fit-content;
 }
 
-.hidden { display: none; }
+button#back-btn:hover {
+    color: var(--text-color);
+}
+
+.hidden { 
+    display: none !important; 
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .terminal-body { padding: 15px; }
+    .question { font-size: 1.1rem; }
+    .command-line { font-size: 0.85rem; }
+}
