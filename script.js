@@ -1,3 +1,4 @@
+```javascript
 const scenarios = {
     start: {
         text: "What did you break this time?",
@@ -7,7 +8,15 @@ const scenarios = {
             { label: "I'm stuck in a MERGE/REBASE nightmare", next: "mergeNightmare" },
             { label: "I accidentally DELETED something", next: "recovery" },
             { label: "I committed SECRETS (API keys/passwords)", next: "secrets" },
-            { label: "Everything is broken, I just want to start over", next: "nuclearOption" }
+            { label: "Everything is broken, I just want to start over", next: "nuclearOption" },
+            { label: "I want to REVERT a pushed commit", next: "revertCommit" },
+            { label: "I forgot to PULL and now have conflicts on PUSH", next: "pullConflict" },
+            { label: "I need to SQUASH multiple commits", next: "squashCommits" },
+            { label: "I'm dealing with STASH issues", next: "stashMenu" },
+            { label: "I want to CLEAN untracked files", next: "cleanUntracked" },
+            { label: "I need to CHANGE the remote URL", next: "changeRemote" },
+            { label: "I want to see DIFF between commits/branches", next: "seeDiff" },
+            { label: "I'm having SUBMODULE problems", next: "submoduleIssues" }
         ]
     },
     wrongBranch: {
@@ -71,7 +80,9 @@ const scenarios = {
         text: "What's the status of the merge/rebase?",
         options: [
             { label: "I want to ABORT this mess and go back", next: "abortMerge" },
-            { label: "I have 100 conflicts and want to use 'THEIRS'", next: "solveTheirs" }
+            { label: "I have 100 conflicts and want to use 'THEIRS'", next: "solveTheirs" },
+            { label: "I have conflicts and want to use 'OURS'", next: "solveOurs" },
+            { label: "Continue rebase after resolving some conflicts", next: "continueRebase" }
         ]
     },
     abortMerge: {
@@ -82,11 +93,20 @@ const scenarios = {
         text: "Force Git to accept the incoming version for all conflicts:",
         commands: ["git checkout --theirs .", "git add .", "git commit"]
     },
+    solveOurs: {
+        text: "Force Git to accept the current branch's version for all conflicts:",
+        commands: ["git checkout --ours .", "git add .", "git commit"]
+    },
+    continueRebase: {
+        text: "After resolving conflicts and staging files, continue the rebase:",
+        commands: ["git add <resolved-files>", "git rebase --continue"]
+    },
     recovery: {
         text: "What did you lose?",
         options: [
             { label: "I deleted a branch locally", next: "recoverBranch" },
-            { label: "I 'hard reset' and lost work", next: "reflog" }
+            { label: "I 'hard reset' and lost work", next: "reflog" },
+            { label: "I lost a remote branch", next: "recoverRemoteBranch" }
         ]
     },
     recoverBranch: {
@@ -104,6 +124,13 @@ const scenarios = {
         ],
         isDanger: true
     },
+    recoverRemoteBranch: {
+        text: "List remote branches and recreate locally:",
+        commands: [
+            "git branch -r",
+            "git checkout -b <local-branch> origin/<remote-branch>"
+        ]
+    },
     secrets: {
         text: "STOP. Do not push. If already pushed, rotate keys immediately. Then run:",
         commands: [
@@ -117,6 +144,134 @@ const scenarios = {
             "git fetch origin",
             "git reset --hard origin/main"
         ],
+        isDanger: true
+    },
+    revertCommit: {
+        text: "Revert creates a new commit that undoes the changes of the specified commit (safe for shared history):",
+        commands: [
+            "git revert <commit-hash>",
+            "git push origin <branch-name>"
+        ]
+    },
+    pullConflict: {
+        text: "Pull and handle conflicts, or rebase to integrate cleanly:",
+        options: [
+            { label: "Merge pull (may create merge commit)", next: "mergePull" },
+            { label: "Rebase pull (linear history)", next: "rebasePull" }
+        ]
+    },
+    mergePull: {
+        text: "Pull with merge strategy:",
+        commands: ["git pull origin <branch-name>"]
+    },
+    rebasePull: {
+        text: "Pull with rebase strategy:",
+        commands: ["git pull --rebase origin <branch-name>"]
+    },
+    squashCommits: {
+        text: "Use interactive rebase to squash the last N commits:",
+        commands: [
+            "git rebase -i HEAD~<number-of-commits>",
+            "# In editor, change 'pick' to 'squash' or 's' for commits to merge"
+        ]
+    },
+    stashMenu: {
+        text: "Stash options:",
+        options: [
+            { label: "Stash current changes", next: "stashPush" },
+            { label: "Apply a stash without removing it", next: "stashApply" },
+            { label: "Pop a stash (apply and remove)", next: "stashPop" },
+            { label: "List stashes", next: "stashList" },
+            { label: "Drop a stash", next: "stashDrop" }
+        ]
+    },
+    stashPush: {
+        text: "Save current changes to stash with a message:",
+        commands: ["git stash push -m 'WIP on feature'"]
+    },
+    stashApply: {
+        text: "Apply the latest stash:",
+        commands: ["git stash apply"]
+    },
+    stashPop: {
+        text: "Apply and remove the latest stash:",
+        commands: ["git stash pop"]
+    },
+    stashList: {
+        text: "View all stashes:",
+        commands: ["git stash list"]
+    },
+    stashDrop: {
+        text: "Drop a specific stash (use index from list):",
+        commands: ["git stash drop stash@{0}"]
+    },
+    cleanUntracked: {
+        text: "Clean untracked files and directories:",
+        options: [
+            { label: "Dry run (preview)", next: "cleanDry" },
+            { label: "Force clean (delete all untracked)", next: "cleanForce" },
+            { label: "Clean including ignored files", next: "cleanIgnored" }
+        ]
+    },
+    cleanDry: {
+        text: "Preview what would be removed:",
+        commands: ["git clean -n"]
+    },
+    cleanForce: {
+        text: "Remove untracked files (dangerous!):",
+        commands: ["git clean -f"],
+        isDanger: true
+    },
+    cleanIgnored: {
+        text: "Remove untracked and ignored files:",
+        commands: ["git clean -f -x"],
+        isDanger: true
+    },
+    changeRemote: {
+        text: "Change the URL of the origin remote:",
+        commands: [
+            "git remote set-url origin <new-url>"
+        ]
+    },
+    seeDiff: {
+        text: "Diff options:",
+        options: [
+            { label: "Diff between two commits", next: "diffCommits" },
+            { label: "Diff between branches", next: "diffBranches" },
+            { label: "Diff unstaged changes", next: "diffUnstaged" }
+        ]
+    },
+    diffCommits: {
+        text: "See changes between two commits:",
+        commands: ["git diff <commit1> <commit2>"]
+    },
+    diffBranches: {
+        text: "See differences between branches:",
+        commands: ["git diff <branch1>..<branch2>"]
+    },
+    diffUnstaged: {
+        text: "See unstaged changes:",
+        commands: ["git diff"]
+    },
+    submoduleIssues: {
+        text: "Submodule troubleshooting:",
+        options: [
+            { label: "Update submodules", next: "updateSubmodules" },
+            { label: "Initialize submodules", next: "initSubmodules" },
+            { label: "Deinit a problematic submodule", next: "deinitSubmodule" }
+        ]
+    },
+    updateSubmodules: {
+        text: "Update all submodules to latest:",
+        commands: ["git submodule update --remote"]
+    },
+    initSubmodules: {
+        text: "Initialize and update submodules:",
+        commands: ["git submodule init", "git submodule update"]
+    },
+    deinitSubmodule: {
+        text: "Deinitialize a submodule:",
+        commands: ["git submodule deinit -f path/to/submodule"],
         isDanger: true
     }
 };
@@ -187,3 +342,4 @@ async function copyToClipboard(id) {
 }
 
 renderNode('start');
+```
