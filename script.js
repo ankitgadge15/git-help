@@ -331,22 +331,21 @@ function renderNode(nodeKey) {
         backBtn.classList.remove('hidden');
     }
 
-    let html = `<div class="question">$ ${node.text}</div>`;
+    let html = '<div class="question">$' + node.text + '</div>';
 
     if (node.options) {
-        node.options.forEach(opt => {
-            html += `<button class="option-btn" onclick="navigateTo('${opt.next}')">> ${opt.label}</button>`;
+        node.options.forEach(function(opt) {
+            html += '<button class="option-btn" onclick="navigateTo(\'' + opt.next + '\')">> ' + opt.label + '</button>';
         });
     } else if (node.commands) {
-        html += `<div class="command-block ${node.isDanger ? 'danger-zone' : ''}">`;
-        node.commands.forEach((cmd, index) => {
-            html += `
-                <div class="command-wrapper">
-                    <code class="command-line" id="cmd-\( {index}"> \){cmd}</code>
-                    <button class="copy-btn" onclick="copyToClipboard('cmd-${index}')">Copy</button>
-                </div>`;
+        html += '<div class="command-block ' + (node.isDanger ? 'danger-zone' : '') + '">';
+        node.commands.forEach(function(cmd, index) {
+            html += '<div class="command-wrapper">' +
+                    '<code class="command-line" id="cmd-' + index + '">' + cmd + '</code>' +
+                    '<button class="copy-btn" onclick="copyToClipboard(\'cmd-' + index + '\')">Copy</button>' +
+                    '</div>';
         });
-        html += `</div><button class="option-btn" onclick="navigateTo('start')" style="margin-top:20px">> Back to Start</button>`;
+        html += '</div><button class="option-btn" onclick="navigateTo(\'start\')" style="margin-top:20px">> Back to Start</button>';
     }
 
     container.innerHTML = html;
@@ -369,11 +368,11 @@ async function copyToClipboard(id) {
     const text = document.getElementById(id).innerText;
     try {
         await navigator.clipboard.writeText(text);
-        const btn = document.querySelector(`[onclick="copyToClipboard('${id}')"]`);
+        const btn = document.querySelector('[onclick="copyToClipboard(\'' + id + '\')"]');
         const originalText = btn.innerText;
         btn.innerText = "Copied!";
         btn.style.color = "var(--success-color)";
-        setTimeout(() => {
+        setTimeout(function() {
             btn.innerText = originalText;
             btn.style.color = "";
         }, 2000);
